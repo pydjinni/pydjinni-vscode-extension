@@ -1,0 +1,86 @@
+{
+  "name": "pydjinni-vscode",
+  "publisher": "pydjinni",
+  "version": "0.0.0",
+  "description": "Visual Studio Code PyDjinni Plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pydjinni/pydjinni-vscode.git"
+  },
+  "author": "jothepro",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/pydjinni/pydjinni-vscode/issues"
+  },
+  "homepage": "https://github.com/pydjinni/pydjinni-vscode#readme",
+  "engines": {
+    "node": ">=21.6.0",
+    "vscode": "^1.85.0"
+  },
+  "extensionDependencies": [
+    "ms-python.python"
+  ],
+  "activationEvents": [
+    "onFileSystem:pydjinni",
+    "workspaceContains:pydjinni.yaml"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/semver": "^7.5.6",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "@vscode/python-extension": "^1.0.5",
+    "semver": "^7.5.4",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "contributes": {
+    "languages": [
+      {
+          "id": "pydjinni",
+          "aliases": [
+              "PyDjinni"
+          ],
+          "extensions": [
+              ".pydjinni",
+              ".djinni"
+          ],
+          "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "pydjinni.server.restart",
+        "title": "Restart Language Server",
+        "category": "pydjinni"
+      }
+    ],
+    "configuration": [],
+    "jsonValidation": [
+      {
+        "fileMatch": "pydjinni.json",
+        "url": "pydjinni:///configuration.schema.json"
+      }
+    ],
+    "yamlValidation": [
+      {
+        "fileMatch": "pydjinni.yaml",
+        "url": "https://pydjinni.github.io/pydjinni/latest/json-schema/config_schema.json"
+      }
+    ]
+  },
+  "main": "./out/extension",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p .",
+    "watch": "tsc -p . -w",
+    "patchVersion": "npm version $(git describe --tags)",
+    "publish": "npm run patchVersion && vsce publish",
+    "package": "npm run patchVersion && vsce package"
+  }
+}
