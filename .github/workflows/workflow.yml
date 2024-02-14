@@ -1,0 +1,68 @@
+name: Build the Extension
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  pull_request:
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+      - name: Install pydjinni
+        run: pip install setuptools-scm==8.0.4
+      - name: calculate version
+        id: version
+        run: echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"
+  package:
+    runs-on: ubuntu-latest
+    needs: [version]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Package prerelease vsix
+        if:  github.event_name != 'release' || github.event.release.prerelease
+        run: npx vsce package --no-git-tag-version --pre-release ${{ needs.version.outputs.version }}
+      - name: Package vsix
+        if: github.event_name == 'release' && !github.event.release.prerelease
+        run: npx vsce publish --no-git-tag-version ${{ needs.version.outputs.version }}
+      - name: Upload package
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension
+          path: pydjinni-vscode-${{ needs.version.outputs.version }}.vsix
+      - name: Publish package
+        if: github.event_name == 'release'
+        run: npx vsce publish --packagePath pydjinni-vscode-${{ needs.version.outputs.version }}.vsix
+  publish:
+    runs-on: ubuntu-latest
+    needs: [version, package]
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Publish prerelease package
+        if: github.event.release.prerelease
+        run: npx vsce publish --no-git-tag-version --pre-release ${{ needs.version.outputs.version }}
+      - name: Publish package
+        if: !github.event.release.prerelease
+        run: npx vsce publish --no-git-tag-version ${{ needs.version.outputs.version }}

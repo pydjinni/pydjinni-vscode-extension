@@ -1,2 +1,4 @@
 node_modules
 out
+syntaxes/pydjinni.tmLanguage.json
+*.vsix

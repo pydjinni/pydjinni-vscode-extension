@@ -1,5 +1,6 @@
 {
   "name": "pydjinni-vscode",
+  "displayName": "PyDjinni",
   "publisher": "pydjinni",
   "version": "0.0.0",
   "description": "Visual Studio Code PyDjinni Plugin",
@@ -17,12 +18,15 @@
     "node": ">=21.6.0",
     "vscode": "^1.85.0"
   },
+  "icon": "images/icon.png",
   "extensionDependencies": [
-    "ms-python.python"
+    "ms-python.python",
+    "redhat.vscode-yaml"
   ],
   "activationEvents": [
     "onFileSystem:pydjinni",
-    "workspaceContains:pydjinni.yaml"
+    "workspaceContains:pydjinni.yaml",
+    "workspaceContains:pydjinni.json"
   ],
   "devDependencies": {
     "@types/node": "^20.11.5",
@@ -32,11 +36,11 @@
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3",
-    "@vscode/vsce": "^2.22.0"
+    "@vscode/vsce": "^2.22.0",
+    "js-yaml": "^4.1.0"
   },
   "dependencies": {
     "@vscode/python-extension": "^1.0.5",
-    "semver": "^7.5.4",
     "vscode-languageclient": "^9.0.1"
   },
   "contributes": {
@@ -53,6 +57,13 @@
           "configuration": "./language-configuration.json"
       }
     ],
+    "grammars": [
+      {
+        "language": "pydjinni",
+        "scopeName": "text.pydjinni",
+        "path": "./syntaxes/pydjinni.tmLanguage.json"
+      }
+    ],
     "commands": [
       {
         "command": "pydjinni.server.restart",
@@ -60,7 +71,17 @@
         "category": "pydjinni"
       }
     ],
-    "configuration": [],
+    "configuration": {
+      "title": "PyDjinni",
+      "properties": {
+        "pydjinni.config": {
+          "type": "string",
+          "default": "pydjinni.yaml",
+          "description": "Path to the PyDjinni configuration file",
+          "title": "Configuration"
+        }
+      }
+    },
     "jsonValidation": [
       {
         "fileMatch": "pydjinni.json",
@@ -69,18 +90,15 @@
     ],
     "yamlValidation": [
       {
-        "fileMatch": "pydjinni.yaml",
-        "url": "https://pydjinni.github.io/pydjinni/latest/json-schema/config_schema.json"
+        "fileMatch": "pydjinni.{yaml,yml}",
+        "url": "pydjinni:///configuration.schema.json"
       }
     ]
   },
   "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p .",
-    "watch": "tsc -p . -w",
-    "patchVersion": "npm version $(git describe --tags)",
-    "publish": "npm run patchVersion && vsce publish",
-    "package": "npm run patchVersion && vsce package"
+    "pre-compile": "npx js-yaml syntaxes/pydjinni.tmLanguage.yaml > syntaxes/pydjinni.tmLanguage.json",
+    "compile": "tsc -p ."
   }
 }
