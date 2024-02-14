@@ -36,7 +36,7 @@ jobs:
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: extension
+          name: pydjinni-vscode-${{ env.version }}
           path: pydjinni-vscode-${{ env.version }}.vsix
       - name: Publish package
         if: github.event_name == 'release'

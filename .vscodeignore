@@ -1,7 +1,6 @@
 .vscode
 .github
 .gitignore
-node_modules
 src/
 syntaxes/pydjinni.tmLanguage.yaml
 tsconfig.json
