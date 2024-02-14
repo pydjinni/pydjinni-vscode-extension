@@ -21,10 +21,11 @@ jobs:
           cache: npm
       - run: npm ci
       - name: calculate version
-        id: version
         run: |
           version="$(git describe --tags)"
-          echo "version=${version#v}" >> $GITHUB_ENV
+          stripped_version="${version#v}"
+          echo $stripped_version
+          echo "version=${stripped_version}" >> $GITHUB_ENV
       - name: Package prerelease vsix
         if:  github.event_name != 'release' || github.event.release.prerelease
         run: npx vsce package --no-git-tag-version --pre-release ${{ env.version }}

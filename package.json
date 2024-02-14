@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/pydjinni/pydjinni-vscode#readme",
   "engines": {
-    "node": ">=21.6.0",
+    "node": ">=20.0.0",
     "vscode": "^1.85.0"
   },
   "icon": "images/icon.png",
@@ -98,7 +98,7 @@
   "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "pre-compile": "npx js-yaml syntaxes/pydjinni.tmLanguage.yaml > syntaxes/pydjinni.tmLanguage.json",
+    "precompile": "npx js-yaml syntaxes/pydjinni.tmLanguage.yaml > syntaxes/pydjinni.tmLanguage.json",
     "compile": "tsc -p ."
   }
 }
