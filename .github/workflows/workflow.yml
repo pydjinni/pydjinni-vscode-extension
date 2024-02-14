@@ -25,16 +25,16 @@ jobs:
           echo "version=${version#v}" >> $GITHUB_ENV
       - name: Package prerelease vsix
         if:  github.event_name != 'release' || github.event.release.prerelease
-        run: npx vsce package --no-git-tag-version --pre-release ${{ steps.version.outputs.version }}
+        run: npx vsce package --no-git-tag-version --pre-release ${{ env.version }}
       - name: Package vsix
         if: github.event_name == 'release' && !(github.event.release.prerelease)
-        run: npx vsce package --no-git-tag-version ${{ steps.version.outputs.version }}
+        run: npx vsce package --no-git-tag-version ${{ env.version }}
       - name: Upload package
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
           name: extension
-          path: pydjinni-vscode-${{ steps.version.outputs.version }}.vsix
+          path: pydjinni-vscode-${{ env.version }}.vsix
       - name: Publish package
         if: github.event_name == 'release'
-        run: npx vsce publish --packagePath pydjinni-vscode-${{ steps.version.outputs.version }}.vsix
+        run: npx vsce publish --packagePath pydjinni-vscode-${{ env.version }}.vsix
