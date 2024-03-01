@@ -54,7 +54,11 @@
               ".pydjinni",
               ".djinni"
           ],
-          "configuration": "./language-configuration.json"
+          "configuration": "./language-configuration.json",
+          "icon": {
+            "light": "./icons/pydjinni_fileicon_light.svg",
+            "dark": "./icons/pydjinni_fileicon_dark.svg"
+          }
       }
     ],
     "grammars": [
