@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     python = await PythonExtension.api()
 
-    await checkLanguageServerAvailability()
+    await startLangServer()
 
     // Restart language server command
     context.subscriptions.push(
@@ -43,16 +43,6 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeConfiguration(async (event) => {
             if (event.affectsConfiguration("pydjinni")) {
                 logger.info('config modified, restarting server...')
-                await startLangServer()
-            }
-        })
-    )
-
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(async (event) => {
-            vscode.Uri.file
-            if(event.document.uri == vscode.workspace.getConfiguration('pydjinni.client').get<vscode.Uri>('cwd')) {
-                logger.info('PyDjinni configuration has changed, restarting server')
                 await startLangServer()
             }
         })
@@ -92,8 +82,6 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         }
     )
-
-    await startLangServer()
     
 }
 
@@ -106,6 +94,9 @@ async function startLangServer() {
     if(client) {
         stopLangServer()
     }
+
+    await checkLanguageServerAvailability()
+
     const config = vscode.workspace.getConfiguration('pydjinni').get<string>("config")
 
     const serverOptions: ServerOptions = {
@@ -161,8 +152,8 @@ async function checkLanguageServerAvailability() {
         await execPython(language_server)
     } catch (err) {
         const action_install = "Install PyDjinni"
-        const action_retry = "Retry"
-        const selection = await vscode.window.showErrorMessage(`PyDjinni: Could not find Language Server!`, action_install, action_retry)
+        const action_reload = "Reload"
+        const selection = await vscode.window.showErrorMessage(`PyDjinni: Could not find Language Server!`, action_install, action_reload)
         switch(selection) {
             case action_install:
                 await vscode.window.withProgress({
@@ -172,7 +163,7 @@ async function checkLanguageServerAvailability() {
                 }, (progress, token) => {
                     return execPython("pip", ["install", "pydjinni"])
                 })
-            case action_retry:
+            case action_reload:
                 await vscode.commands.executeCommand('workbench.action.reloadWindow');
         }
     }
