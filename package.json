@@ -6,14 +6,14 @@
   "description": "Visual Studio Code PyDjinni Extension",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pydjinni/pydjinni-vscode.git"
+    "url": "git+https://github.com/pydjinni/pydjinni-vscode-extension.git"
   },
   "author": "jothepro",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/pydjinni/pydjinni-vscode/issues"
+    "url": "https://github.com/pydjinni/pydjinni-vscode-extension/issues"
   },
-  "homepage": "https://github.com/pydjinni/pydjinni-vscode#readme",
+  "homepage": "https://github.com/pydjinni/pydjinni-vscode-extension#readme",
   "engines": {
     "node": ">=20.0.0",
     "vscode": "^1.85.0"
