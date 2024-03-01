@@ -1,7 +1,7 @@
 {
   "name": "pydjinni-vscode",
   "displayName": "PyDjinni",
-  "publisher": "pydjinni",
+  "publisher": "PyDjinni",
   "version": "0.0.0",
   "description": "Visual Studio Code PyDjinni Extension",
   "repository": {
