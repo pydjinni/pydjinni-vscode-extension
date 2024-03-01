@@ -41,3 +41,5 @@ jobs:
       - name: Publish package
         if: github.event_name == 'release'
         run: npx vsce publish --packagePath pydjinni-vscode-${{ env.version }}.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
