@@ -3,7 +3,7 @@
   "displayName": "PyDjinni",
   "publisher": "pydjinni",
   "version": "0.0.0",
-  "description": "Visual Studio Code PyDjinni Plugin",
+  "description": "Visual Studio Code PyDjinni Extension",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pydjinni/pydjinni-vscode.git"
@@ -56,8 +56,8 @@
           ],
           "configuration": "./language-configuration.json",
           "icon": {
-            "light": "./icons/pydjinni_fileicon_light.svg",
-            "dark": "./icons/pydjinni_fileicon_dark.svg"
+            "light": "./icons/pydjinni_fileicon_light.png",
+            "dark": "./icons/pydjinni_fileicon_dark.png"
           }
       }
     ],
