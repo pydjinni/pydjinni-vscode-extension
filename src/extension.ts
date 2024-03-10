@@ -96,12 +96,18 @@ async function startLangServer() {
     }
 
     await checkLanguageServerAvailability()
+    const configuration = vscode.workspace.getConfiguration('pydjinni')
+    const configFile = configuration.get<string>("config")
+    const debugLogs = configuration.get<boolean>("debugLogs")
 
-    const config = vscode.workspace.getConfiguration('pydjinni').get<string>("config")
+    let args = ["--connection", "STDIO", "--config", configFile]
+    if(debugLogs) {
+        args = args.concat(["--log", "pydjinni_lsp.log"])
+    }
 
     const serverOptions: ServerOptions = {
         command: python.environments.getActiveEnvironmentPath().path,
-        args: ["-m", language_server, "start", "--connection", "STDIO", "--config", config]
+        args: ["-m", language_server, "start"].concat(args) 
     };
 
     const clientOptions: LanguageClientOptions = {

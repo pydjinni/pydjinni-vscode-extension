@@ -81,8 +81,12 @@
         "pydjinni.config": {
           "type": "string",
           "default": "pydjinni.yaml",
-          "description": "Path to the PyDjinni configuration file",
-          "title": "Configuration"
+          "description": "Path to the PyDjinni configuration file"
+        },
+        "pydjinni.debugLogs": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, the language server logs will be written to 'pydjinni_lsp.log'"
         }
       }
     },
