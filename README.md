@@ -1,8 +1,8 @@
 # PyDjinni VSCode Extension
 
-![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/PyDjinni.pydjinni-vscode)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/PyDjinni.pydjinni-vscode)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/stars/PyDjinni.pydjinni-vscode)
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/PyDjinni.pydjinni-vscode)](https://marketplace.visualstudio.com/items?itemName=PyDjinni.pydjinni-vscode)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/PyDjinni.pydjinni-vscode)](https://marketplace.visualstudio.com/items?itemName=PyDjinni.pydjinni-vscode&ssr=false#version-history)
+[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/stars/PyDjinni.pydjinni-vscode)](https://marketplace.visualstudio.com/items?itemName=PyDjinni.pydjinni-vscode&ssr=false#review-details)
 
 Visual Studio Code PyDjinni Extension
 
