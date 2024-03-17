@@ -22,3 +22,4 @@ pip install pydjinni
 * 🎯 Jump to definition
 * ⚠️ Deprecation warnings
 * ℹ️ Type documentation on hover
+* ⚙️ Configuration file validation
