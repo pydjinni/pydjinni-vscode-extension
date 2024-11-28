@@ -86,7 +86,7 @@
         "pydjinni.debugLogs": {
           "type": "boolean",
           "default": false,
-          "description": "If enabled, the language server logs will be written to 'pydjinni_lsp.log'"
+          "description": "If enabled, the language server logs will be written to 'pydjinni-language-server.log'"
         }
       }
     },

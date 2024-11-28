@@ -116,7 +116,7 @@ async function startLangServer() {
 
     let args = ["--connection", "STDIO", "--config", configFile]
     if(debugLogs) {
-        args = args.concat(["--log", "pydjinni_lsp.log"])
+        args = args.concat(["--log", "pydjinni-language-server.log"])
     }
 
     const serverOptions: ServerOptions = {
