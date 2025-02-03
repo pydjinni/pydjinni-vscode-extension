@@ -1,20 +1,47 @@
 $schema: https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
 name: PyDjinni
 scopeName: text.pydjinni
+foldingStartMarker: \{\s*$
+foldingStopMarker: ^\s*\}
 patterns:
   - {include: '#comment'}
-  - {include: '#keywords'}
   - {include: '#import'}
   - {include: '#string'}
+  - {include: '#enum_modifiers'}
+  - {include: '#types'}
+  - {include: '#parameter'}
+  - {include: '#function'}
   - {include: '#typename'}
-  - {include: '#method'}
-  - {include: '#property'}
-  - {include: '#returntype'}
-  - {include: '#constant'}
+  - {include: '#typename_reference'}
+  - {include: '#namespace_typename'}
+  - {include: '#modifiers'}
+  - {include: '#interface_targets'}
+  - {include: '#deriving_targets'}
+  - {include: '#punctuation_terminator'}
+  - {include: '#punctuation_block'}
+  - {include: '#punctuation_comma'}
+  - {include: '#punctuation_accessor'}
+  - {include: '#operator_assignment'}
+  - {include: '#operator_type_annotation'}
+  - {include: '#parentheses'}
 repository:
   comment:
     name: comment.line.hashtag
-    match: '#.*'
+    begin: '#'
+    end: '$'
+    patterns:
+      - name: storage.type.class
+        match: '@(returns|deprecated)'
+      - match: '(@(param|throws))\s*(\w+)?'
+        captures:
+          1: {name: storage.type.class}
+          3: {name: variable.other}
+      - name: markup.inline.raw.string
+        match: '`.*`'
+      - name: markup.bold
+        match: \*\*[^*]*\*\*
+      - name: markup.italic
+        match: \*[^*]*\*
   string:
     match: '".*"'
     name: string.quoted.double
@@ -22,29 +49,58 @@ repository:
     match: '@import|@extern'
     name: keyword.control.import
   typename:
-    match: '([a-zA-Z][a-zA-Z0-9_]*) *(=) (interface|enum|record|flags)?'
+    match: ([_\w]+)\s*(?=\=)
     captures:
-      1: {name: variable}
-      2: {name: keyword.operator}
-      3: {name: storage.type}
-  method:
-    match: '([a-zA-Z][a-zA-Z0-9_]*) *\('
+      1: {name: entity.name.type}
+  typename_reference:
+    match: ((?<=:|->)\s*([<>_\w]+)|(?<=\.)([<>_\w]+)|(?<=throws)\s*([<>_\w]+)\s*(?=,|->|;)|(?<=,)\s*([<>_\w]+)\s*(?=,|->|;)|(?<=->)\s*([<>_\w]+))
     captures:
-      1: {name: support.function}
-  property:
-    match: '([a-zA-Z][a-zA-Z0-9_]*) *(:) *([a-zA-Z][a-zA-Z0-9_]*)?'
+      2: {name: entity.name.type.interface}
+      3: {name: entity.name.type.interface}
+      4: {name: entity.name.type.interface}
+      5: {name: entity.name.type.interface}
+  namespace_typename:
+    match: (?<=namespace)\s*([_\w]+)
     captures:
-      1: {name: variable}
-      2: {name: keyword.operator}
-      3: {name: support.type}
-  returntype:
-    match: '(->) *([a-zA-Z][a-zA-Z0-9_]*)'
+      1: {name: entity.name.type.module}
+  types:
+    name: storage.type
+    match: \b(interface|enum|record|flags|error|function|namespace)\b
+  modifiers:
+    name: storage.modifier
+    match: \b(const|static|async|throws|main|deriving)\b
+  enum_modifiers:
+    match: (?<=\=)\s*(all|none)
     captures:
-      1: {name: keyword.operator}
-      2: {name: support.type}
-  constant:
-    match: '([a-zA-Z][a-zA-Z0-9_]*)( *(=) *(all|none))?;'
+      1: {name: entity.name.tag}
+  parameter:
+    match: ([_\w]+)\s*(?=:|\(|=\s*all|=\s*none|;)
     captures:
-      1: {name: variable.other.constant}
-      3: {name: keyword.operator}
-      4: {name: support.type}
+      1: {name: variable.other.property}
+  interface_targets:
+    name: entity.name.tag
+    match: \+[\w]+
+  deriving_targets:
+    name: entity.name.tag
+    match: eq|ord
+  punctuation_terminator:
+    name: punctuation.terminator
+    match: ';'
+  punctuation_block:
+    name: punctuation.definition.block
+    match: '{|}'
+  punctuation_comma:
+    name: punctuation.separator.comma
+    match: ','
+  punctuation_accessor:
+    name: punctuation.accessor
+    match: '\.'
+  operator_assignment:
+    name: keyword.operator.assignment
+    match: '='
+  operator_type_annotation:
+    name: keyword.operator.type.annotation
+    match: '(->|:)'
+  parentheses:
+    name: keyword.operator.type.annotation
+    match: '(->|:)'
