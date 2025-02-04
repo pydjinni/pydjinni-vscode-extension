@@ -9,14 +9,21 @@ patterns:
   - {include: '#string'}
   - {include: '#enum_modifiers'}
   - {include: '#types'}
-  - {include: '#parameter'}
-  - {include: '#function'}
-  - {include: '#typename'}
-  - {include: '#typename_reference'}
-  - {include: '#namespace_typename'}
   - {include: '#modifiers'}
-  - {include: '#interface_targets'}
   - {include: '#deriving_targets'}
+  - {include: '#parameter'}
+  - {include: '#typename'}
+  - {include: '#typename_reference_parameter'}
+  - {include: '#typename_reference_return'}
+  - {include: '#typename_reference_namespace'}
+  - {include: '#typename_reference_throws_1'}
+  - {include: '#typename_reference_throws_2'}
+  - {include: '#typename_reference_throws_3'}
+  - {include: '#typename_reference_throws_4'}
+  - {include: '#typename_reference_throws_5'}
+  - {include: '#typename_reference_throws_6'}
+  - {include: '#namespace_typename'}
+  - {include: '#interface_targets'}
   - {include: '#punctuation_terminator'}
   - {include: '#punctuation_block'}
   - {include: '#punctuation_comma'}
@@ -31,58 +38,95 @@ repository:
     end: '$'
     patterns:
       - name: storage.type.class
-        match: '@(returns|deprecated)'
-      - match: '(@(param|throws))\s*(\w+)?'
+        match: '@returns|@deprecated'
+      - match: '(@param|@throws)\s*(\w+)?'
         captures:
           1: {name: storage.type.class}
-          3: {name: variable.other}
+          2: {name: variable.other}
       - name: markup.inline.raw.string
         match: '`.*`'
       - name: markup.bold
-        match: \*\*[^*]*\*\*
+        match: \*\*[^*]+\*\*
       - name: markup.italic
-        match: \*[^*]*\*
-  string:
-    match: '".*"'
-    name: string.quoted.double
+        match: \*[^*]+\*
   import:
     match: '@import|@extern'
     name: keyword.control.import
-  typename:
-    match: ([_\w]+)\s*(?=\=)
+  string:
+    match: '".*"'
+    name: string.quoted.double
+  enum_modifiers:
+    match: (?<=\=)\s*(all|none)
     captures:
-      1: {name: entity.name.type}
-  typename_reference:
-    match: ((?<=:|->)\s*([<>_\w]+)|(?<=\.)([<>_\w]+)|(?<=throws)\s*([<>_\w]+)\s*(?=,|->|;)|(?<=,)\s*([<>_\w]+)\s*(?=,|->|;)|(?<=->)\s*([<>_\w]+))
-    captures:
-      2: {name: entity.name.type.interface}
-      3: {name: entity.name.type.interface}
-      4: {name: entity.name.type.interface}
-      5: {name: entity.name.type.interface}
-  namespace_typename:
-    match: (?<=namespace)\s*([_\w]+)
-    captures:
-      1: {name: entity.name.type.module}
+      1: {name: entity.name.tag}
   types:
     name: storage.type
     match: \b(interface|enum|record|flags|error|function|namespace)\b
   modifiers:
     name: storage.modifier
-    match: \b(const|static|async|throws|main|deriving)\b
-  enum_modifiers:
-    match: (?<=\=)\s*(all|none)
-    captures:
-      1: {name: entity.name.tag}
+    match: \b(const|static|async|throws|main)\b
+  deriving_targets:
+    begin: \b(deriving)\s*(\()
+    beginCaptures:
+      1: {name: storage.modifier}
+      2: {name: punctuation.definition.parameters}
+    end: (\))
+    endCaptures:
+      1: {name: punctuation.definition.parameters}
+    patterns:
+      - name: entity.name.tag
+        match: \w+
   parameter:
     match: ([_\w]+)\s*(?=:|\(|=\s*all|=\s*none|;)
     captures:
       1: {name: variable.other.property}
+  typename:
+    match: ([_\w]+)\s*(?=\=)
+    captures:
+      1: {name: entity.name.type}
+  typename_reference_parameter:
+    match: (?<=:)\s*([<>_\w]+)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_return:
+    match: (?<=->)\s*([<>_\w]+)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_namespace:
+    match: (?<=\.)([<>_\w]+)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_1:
+    match: (?<=throws)\s*([<>_\w]+)\s*(?=,)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_2:
+    match: (?<=throws)\s*([<>_\w]+)\s*(?=->)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_3:
+    match: (?<=throws)\s*([<>_\w]+)\s*(?=;)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_4:
+    match: (?<=,)\s*([<>_\w]+)\s*(?=,)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_5:
+    match: (?<=,)\s*([<>_\w]+)\s*(?=->)
+    captures:
+      1: {name: entity.name.type.interface}
+  typename_reference_throws_6:
+    match: (?<=,)\s*([<>_\w]+)\s*(?=;)
+    captures:
+      1: {name: entity.name.type.interface}
+  namespace_typename:
+    match: (?<=namespace)\s*([_\w]+)
+    captures:
+      1: {name: entity.name.type.module}
   interface_targets:
     name: entity.name.tag
     match: \+[\w]+
-  deriving_targets:
-    name: entity.name.tag
-    match: eq|ord
   punctuation_terminator:
     name: punctuation.terminator
     match: ';'
@@ -102,5 +146,5 @@ repository:
     name: keyword.operator.type.annotation
     match: '(->|:)'
   parentheses:
-    name: keyword.operator.type.annotation
-    match: '(->|:)'
+    name: punctuation.definition.parameters
+    match: '\(|\)'
