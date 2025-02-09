@@ -113,12 +113,19 @@ async function startLangServer() {
     const configuration = vscode.workspace.getConfiguration('pydjinni')
     const configFile = configuration.get<string>("config")
     const debugLogs = configuration.get<boolean>("debugLogs")
+    const generateOnSave = configuration.get<boolean>("generateOnSave")
+    const generateBasePath = configuration.get<string>("generateBasePath")
 
     let args = ["--connection", "STDIO", "--config", configFile]
     if(debugLogs) {
         args = args.concat(["--log", "pydjinni-language-server.log"])
     }
-
+    if(generateOnSave) {
+        args.push("--generate-on-save")
+    }
+    if(generateBasePath !== "") {
+        args.push("--generate-base-path", generateBasePath)
+    }
     const serverOptions: ServerOptions = {
         command: python.environments.getActiveEnvironmentPath().path,
         args: ["-m", language_server, "start"].concat(args) 

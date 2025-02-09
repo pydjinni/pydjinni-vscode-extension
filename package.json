@@ -87,6 +87,16 @@
           "type": "boolean",
           "default": false,
           "description": "If enabled, the language server logs will be written to 'pydjinni-language-server.log'"
+        },
+        "pydjinni.generateOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, the PyDjinni generator will run on file save.\nThis will do a clean regeneration, which might lead to unexcepted behavior if multiple pydjinni files are chained with @import!"
+        },
+        "pydjinni.generateBasePath": {
+          "type": "string",
+          "default": "",
+          "description": "Base path for the generated files. If empty, the files will be generated relative to the project root."
         }
       }
     },
