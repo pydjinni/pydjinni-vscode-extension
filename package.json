@@ -29,7 +29,7 @@
     "workspaceContains:pydjinni.json"
   ],
   "devDependencies": {
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.13.8",
     "@types/semver": "^7.5.8",
     "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
