@@ -22,4 +22,7 @@ pip install pydjinni
 * 🎯 Jump to definition
 * ⚠️ Deprecation warnings
 * ℹ️ Type documentation on hover
+* 📋 File outline
+* 🔗 Code lenses that link to generated code
 * ⚙️ Configuration file validation
+
