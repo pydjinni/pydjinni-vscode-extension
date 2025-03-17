@@ -23,6 +23,7 @@ pip install pydjinni
 * ⚠️ Deprecation warnings
 * ℹ️ Type documentation on hover
 * 📋 File outline
+* 💾 Automatically generate code on save
 * 🔗 Code lenses that link to generated code
 * ⚙️ Configuration file validation
 
