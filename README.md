@@ -26,4 +26,5 @@ pip install pydjinni
 * 💾 Automatically generate code on save
 * 🔗 Code lenses that link to generated code
 * ⚙️ Configuration file validation
+* 🤖 IntelliSense for type and language target completion
 

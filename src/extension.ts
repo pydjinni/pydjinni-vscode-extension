@@ -1,4 +1,4 @@
-// Copyright 2024 jothepro
+// Copyright 2024 - 2025 jothepro
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-"use strict";
+'use strict'
 
-import * as vscode from "vscode";
-import * as cp from "child_process";
-import { PythonExtension } from "@vscode/python-extension";
-import { LanguageClient, LanguageClientOptions, ServerOptions, State } from "vscode-languageclient/node";
+import * as vscode from 'vscode'
+import * as cp from 'child_process'
+import { PythonExtension } from '@vscode/python-extension'
+import { LanguageClient, LanguageClientOptions, ServerOptions, State } from 'vscode-languageclient/node'
 
 let client: LanguageClient
 let python: PythonExtension
 let logger: vscode.LogOutputChannel
-const language_server = "pydjinni_language_server"
+const language_server = 'pydjinni_language_server'
 
 /**
  * Extension entrypoint.
@@ -30,7 +30,7 @@ const language_server = "pydjinni_language_server"
  */
 export async function activate(context: vscode.ExtensionContext) {
     logger = vscode.window.createOutputChannel('PyDjinni', { log: true })
-    logger.info("PyDjinni extension activated.")
+    logger.info('PyDjinni extension activated.')
 
     python = await PythonExtension.api()
 
@@ -38,9 +38,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Restart language server command
     context.subscriptions.push(
-        vscode.commands.registerCommand("pydjinni.server.restart", async () => {
+        vscode.commands.registerCommand('pydjinni.server.restart', async () => {
             logger.info('restarting server...')
-            await startLangServer()
+            await client.restart()
         })
     )
 
@@ -48,108 +48,90 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         python.environments.onDidChangeActiveEnvironmentPath(async () => {
             logger.info('python env modified, restarting server...')
-            await startLangServer()
+            await client.restart()
         })
     )
 
     // ... or if they change a relevant config option
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(async (event) => {
-            if (event.affectsConfiguration("pydjinni")) {
-                logger.info('config modified, restarting server...')
-                await startLangServer()
+            if (event.affectsConfiguration('pydjinni.debugLogs')) {
+                logger.info('config `pydjinni.debugLogs` modified, restarting server...')
+                await client.restart()
             }
         })
     )
 
     // registering JSON schema for pydjinni.json
     context.subscriptions.push(
-        vscode.workspace.registerTextDocumentContentProvider("pydjinni", new class implements vscode.TextDocumentContentProvider {
+        vscode.workspace.registerTextDocumentContentProvider(
+            'pydjinni',
+            new (class implements vscode.TextDocumentContentProvider {
+                // emitter and its event
+                onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>()
+                onDidChange = this.onDidChangeEmitter.event
 
-            // emitter and its event
-            onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
-            onDidChange = this.onDidChangeEmitter.event;
-    
-            async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
-                if(uri.path == "/configuration.schema.json") {
-                    return execPython(language_server, ["config-schema"])
-                } else {
-                    return Promise.reject(new Error(`Document not found: ${uri.toString()}`));
+                async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+                    if (uri.path == '/configuration.schema.json') {
+                        return execPython(language_server, ['config-schema'])
+                    } else {
+                        return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
+                    }
                 }
-                
-            }
-        })
+            })()
+        )
     )
 
     // registering JSON schema for pydjinni.yaml
     const yaml = vscode.extensions.getExtension('redhat.vscode-yaml')
-    if (!yaml.isActive) await yaml.activate();
-    yaml.exports.registerContributor(
-        'pydjinni',
-        () => undefined,
-        async (rawUri: string) => {
-            const uri = vscode.Uri.parse(rawUri)
-            if(uri.path == "/configuration.schema.json") {
-                return execPython(language_server, ["config-schema"])
-            } else {
-                return Promise.reject(new Error(`Document not found: ${uri.toString()}`));
+    if (yaml) {
+        if (!yaml.isActive) await yaml.activate()
+        yaml.exports.registerContributor(
+            'pydjinni',
+            () => undefined,
+            async (rawUri: string) => {
+                const uri = vscode.Uri.parse(rawUri)
+                if (uri.path == '/configuration.schema.json') {
+                    return execPython(language_server, ['config-schema'])
+                } else {
+                    return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
+                }
             }
-        }
-    )
-    
+        )
+    }
 }
 
-export function deactivate(): Thenable<void> {
-    return stopLangServer()
+export async function deactivate(): Promise<void> {
+    await client.stop()
+    await client.dispose()
 }
-
 
 async function startLangServer() {
-    if(client) {
-        stopLangServer()
-    }
-
     await checkLanguageServerAvailability()
     const configuration = vscode.workspace.getConfiguration('pydjinni')
-    const configFile = configuration.get<string>("config")
-    const debugLogs = configuration.get<boolean>("debugLogs")
-    const generateOnSave = configuration.get<boolean>("generateOnSave")
-    const generateBasePath = configuration.get<string>("generateBasePath")
+    const debugLogs = configuration.get<boolean>('debugLogs')
 
-    let args = ["--connection", "STDIO", "--config", configFile]
-    if(debugLogs) {
-        args = args.concat(["--log", "pydjinni-language-server.log"])
-    }
-    if(generateOnSave) {
-        args.push("--generate-on-save")
-    }
-    if(generateBasePath !== "") {
-        args.push("--generate-base-path", generateBasePath)
+    let args = ['--connection', 'STDIO']
+    if (debugLogs) {
+        args = args.concat(['--log', 'pydjinni-language-server.log'])
     }
     const serverOptions: ServerOptions = {
         command: python.environments.getActiveEnvironmentPath().path,
-        args: ["-m", language_server, "start"].concat(args) 
-    };
+        args: ['-m', language_server, 'start'].concat(args),
+    }
 
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: 'file', language: 'pydjinni' }],
         outputChannel: logger,
         connectionOptions: {
-            maxRestartCount: 3 // don't restart on server failure.
+            maxRestartCount: 3, // don't restart on server failure.
         },
-    };
+    }
 
-    client = new LanguageClient('pydjinni-language-server', serverOptions, clientOptions);
+    client = new LanguageClient('pydjinni-language-server', serverOptions, clientOptions)
     await client.start()
 }
 
-async function stopLangServer(): Promise<void> {
-    if (client && client.state === State.Running) {
-        await client.stop()
-        client.dispose()
-    }
-    client = undefined
-}
 
 /**
  * Executes a Python module in the currently active Python environment
@@ -160,13 +142,13 @@ async function stopLangServer(): Promise<void> {
 const execPython = (module: string, args: string[] = []) =>
     new Promise<string>((resolve, reject) => {
         const activeEnvPath = python.environments.getActiveEnvironmentPath().path
-        cp.exec(`${activeEnvPath} -m ${module} ${args.join(" ")}`, (err, out) => {
+        cp.exec(`${activeEnvPath} -m ${module} ${args.join(' ')}`, (err, out) => {
             if (err) {
-                return reject(err);
+                return reject(err)
             }
-            return resolve(out);
-        });
-    });
+            return resolve(out)
+        })
+    })
 
 /**
  * Checks if the `pydjinni_language_server` Python module is available in the active Python environment.
@@ -178,20 +160,27 @@ async function checkLanguageServerAvailability() {
     try {
         await execPython(language_server)
     } catch (err) {
-        const action_install = "Install PyDjinni"
-        const action_reload = "Reload"
-        const selection = await vscode.window.showErrorMessage(`PyDjinni: Could not find Language Server!`, action_install, action_reload)
-        switch(selection) {
+        const action_install = 'Install PyDjinni'
+        const action_reload = 'Reload'
+        const selection = await vscode.window.showErrorMessage(
+            `PyDjinni: Could not find Language Server!`,
+            action_install,
+            action_reload
+        )
+        switch (selection) {
             case action_install:
-                await vscode.window.withProgress({
-                    location: vscode.ProgressLocation.Notification,
-                    title: "Installing PyDjinni",
-                    cancellable: true
-                }, (progress, token) => {
-                    return execPython("pip", ["install", "pydjinni"])
-                })
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: 'Installing PyDjinni',
+                        cancellable: true,
+                    },
+                    (progress, token) => {
+                        return execPython('pip', ['install', 'pydjinni'])
+                    }
+                )
             case action_reload:
-                await vscode.commands.executeCommand('workbench.action.reloadWindow');
+                await vscode.commands.executeCommand('workbench.action.reloadWindow')
         }
     }
 }
