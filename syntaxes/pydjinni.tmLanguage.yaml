@@ -4,33 +4,33 @@ scopeName: text.pydjinni
 foldingStartMarker: \{\s*$
 foldingStopMarker: ^\s*\}
 patterns:
-  - {include: '#comment'}
-  - {include: '#import'}
-  - {include: '#string'}
-  - {include: '#enum_modifiers'}
-  - {include: '#types'}
-  - {include: '#modifiers'}
-  - {include: '#deriving_targets'}
-  - {include: '#parameter'}
-  - {include: '#typename'}
-  - {include: '#typename_reference_parameter'}
-  - {include: '#typename_reference_return'}
-  - {include: '#typename_reference_namespace'}
-  - {include: '#typename_reference_throws_1'}
-  - {include: '#typename_reference_throws_2'}
-  - {include: '#typename_reference_throws_3'}
-  - {include: '#typename_reference_throws_4'}
-  - {include: '#typename_reference_throws_5'}
-  - {include: '#typename_reference_throws_6'}
-  - {include: '#namespace_typename'}
-  - {include: '#interface_targets'}
-  - {include: '#punctuation_terminator'}
-  - {include: '#punctuation_block'}
-  - {include: '#punctuation_comma'}
-  - {include: '#punctuation_accessor'}
-  - {include: '#operator_assignment'}
-  - {include: '#operator_type_annotation'}
-  - {include: '#parentheses'}
+  - { include: '#comment' }
+  - { include: '#import' }
+  - { include: '#string' }
+  - { include: '#enum_modifiers' }
+  - { include: '#types' }
+  - { include: '#modifiers' }
+  - { include: '#deriving_targets' }
+  - { include: '#typename' }
+  - { include: '#typename_reference_parameter' }
+  - { include: '#typename_reference_return' }
+  - { include: '#typename_reference_namespace' }
+  - { include: '#typename_reference_throws_1' }
+  - { include: '#typename_reference_throws_2' }
+  - { include: '#typename_reference_throws_3' }
+  - { include: '#typename_reference_throws_4' }
+  - { include: '#typename_reference_throws_5' }
+  - { include: '#typename_reference_throws_6' }
+  - { include: '#namespace_typename' }
+  - { include: '#parameter' }
+  - { include: '#interface_targets' }
+  - { include: '#punctuation_terminator' }
+  - { include: '#punctuation_block' }
+  - { include: '#punctuation_comma' }
+  - { include: '#punctuation_accessor' }
+  - { include: '#operator_assignment' }
+  - { include: '#operator_type_annotation' }
+  - { include: '#parentheses' }
 repository:
   comment:
     name: comment.line.hashtag
@@ -39,10 +39,14 @@ repository:
     patterns:
       - name: storage.type.class
         match: '@returns|@deprecated'
-      - match: '(@param|@throws)\s*(\w+)?'
+      - match: '(@param)\s*(\w+)?'
         captures:
-          1: {name: storage.type.class}
-          2: {name: variable.other}
+          1: { name: storage.type.class }
+          2: { name: variable.other }
+      - match: '(@throws)\s*([\w.]+)?'
+        captures:
+          1: { name: storage.type.class }
+          2: { name: variable.other }
       - name: markup.inline.raw.string
         match: '`.*`'
       - name: markup.bold
@@ -58,7 +62,7 @@ repository:
   enum_modifiers:
     match: (?<=\=)\s*(all|none)
     captures:
-      1: {name: entity.name.tag}
+      1: { name: entity.name.tag }
   types:
     name: storage.type
     match: \b(interface|enum|record|flags|error|function|namespace)\b
@@ -68,62 +72,62 @@ repository:
   deriving_targets:
     begin: \b(deriving)\s*(\()
     beginCaptures:
-      1: {name: storage.modifier}
-      2: {name: punctuation.definition.parameters}
+      1: { name: storage.modifier }
+      2: { name: punctuation.definition.parameters }
     end: (\))
     endCaptures:
-      1: {name: punctuation.definition.parameters}
+      1: { name: punctuation.definition.parameters }
     patterns:
       - name: entity.name.tag
         match: \w+
-  parameter:
-    match: ([_\w]+)\s*(?=:|\(|=\s*all|=\s*none|;)
-    captures:
-      1: {name: variable.other.property}
   typename:
-    match: ([_\w]+)\s*(?=\=)
+    match: ([\w]+)\s*(?=\=)
     captures:
-      1: {name: entity.name.type}
+      1: { name: entity.name.type }
   typename_reference_parameter:
-    match: (?<=:)\s*([<>_\w]+)
+    match: (?<=:)\s*([<>\w]+)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_return:
-    match: (?<=->)\s*([<>_\w]+)
+    match: (?<=->)\s*([<>\w]+)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_namespace:
-    match: (?<=\.)([<>_\w]+)
+    match: (?<=\.)([<>\w]+)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_1:
-    match: (?<=throws)\s*([<>_\w]+)\s*(?=,)
+    match: (?<=throws)\s*([<>\w]+)\s*(?=,|.)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_2:
-    match: (?<=throws)\s*([<>_\w]+)\s*(?=->)
+    match: (?<=throws)\s*([<>\w]+)\s*(?=->)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_3:
-    match: (?<=throws)\s*([<>_\w]+)\s*(?=;)
+    match: (?<=throws)\s*([<>\w]+)\s*(?=;)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_4:
-    match: (?<=,)\s*([<>_\w]+)\s*(?=,)
+    match: (?<=,)\s*([<>\w]+)\s*(?=,|.)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_5:
-    match: (?<=,)\s*([<>_\w]+)\s*(?=->)
+    match: (?<=,)\s*([<>\w]+)\s*(?=->)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   typename_reference_throws_6:
-    match: (?<=,)\s*([<>_\w]+)\s*(?=;)
+    match: (?<=,)\s*([<>\w]+)\s*(?=;)
     captures:
-      1: {name: entity.name.type.interface}
+      1: { name: entity.name.type.interface }
   namespace_typename:
-    match: (?<=namespace)\s*([_\w]+)
+    match: (?<=namespace)\s*([\w]+)
     captures:
-      1: {name: entity.name.type.module}
+      1: { name: entity.name.type.module }
+  parameter:
+    match: ([\w]+)\s*(?=:|\(|=\s*all|=\s*none|;)
+    captures:
+      1: { name: variable.other.property }
   interface_targets:
     name: entity.name.tag
     match: \+[\w]+
