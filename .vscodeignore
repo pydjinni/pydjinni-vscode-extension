@@ -1,7 +1,9 @@
 .vscode
 .github
 .gitignore
+node_modules
+out/
 src/
 syntaxes/pydjinni.tmLanguage.yaml
 tsconfig.json
-webpack.config.js
+esbuild.js
