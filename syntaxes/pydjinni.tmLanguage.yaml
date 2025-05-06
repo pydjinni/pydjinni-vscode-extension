@@ -130,7 +130,7 @@ repository:
       1: { name: variable.other.property }
   interface_targets:
     name: entity.name.tag
-    match: \+[\w]+
+    match: ([+-][\w]+)
   punctuation_terminator:
     name: punctuation.terminator
     match: ';'
