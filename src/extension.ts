@@ -158,8 +158,9 @@ const execPython = (module: string, args: string[] = []) =>
  */
 async function checkLanguageServerAvailability() {
     try {
-        await execPython(language_server)
+        await execPython(language_server, ['--version'])
     } catch (err) {
+        logger.error(`Could not find ${language_server} module in the active Python environment!`, err)
         const action_install = 'Install PyDjinni'
         const action_reload = 'Reload'
         const selection = await vscode.window.showErrorMessage(
@@ -180,7 +181,7 @@ async function checkLanguageServerAvailability() {
                     }
                 )
             case action_reload:
-                await vscode.commands.executeCommand('workbench.action.reloadWindow')
+                await vscode.commands.executeCommand('workbench.action.restartExtensionHost')
         }
     }
 }
