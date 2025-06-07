@@ -34,7 +34,42 @@ export async function activate(context: vscode.ExtensionContext) {
 
     python = await PythonExtension.api()
 
-    await startLangServer()
+    // registering JSON schema for pydjinni.yaml
+    const yaml = vscode.extensions.getExtension('redhat.vscode-yaml')
+    if (yaml) {
+        yaml.exports.registerContributor(
+            'pydjinni',
+            () => undefined,
+            async (rawUri: string) => {
+                const uri = vscode.Uri.parse(rawUri)
+                if (uri.path == '/configuration.schema.json') {
+                    return execPython(language_server, ['config-schema'])
+                } else {
+                    return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
+                }
+            }
+        )
+    }
+
+    // registering JSON schema for pydjinni.json
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider(
+            'pydjinni',
+            new (class implements vscode.TextDocumentContentProvider {
+                // emitter and its event
+                onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>()
+                onDidChange = this.onDidChangeEmitter.event
+
+                async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+                    if (uri.path == '/configuration.schema.json') {
+                        return execPython(language_server, ['config-schema'])
+                    } else {
+                        return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
+                    }
+                }
+            })()
+        )
+    )
 
     // Restart language server command
     context.subscriptions.push(
@@ -62,43 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     )
 
-    // registering JSON schema for pydjinni.json
-    context.subscriptions.push(
-        vscode.workspace.registerTextDocumentContentProvider(
-            'pydjinni',
-            new (class implements vscode.TextDocumentContentProvider {
-                // emitter and its event
-                onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>()
-                onDidChange = this.onDidChangeEmitter.event
-
-                async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
-                    if (uri.path == '/configuration.schema.json') {
-                        return execPython(language_server, ['config-schema'])
-                    } else {
-                        return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
-                    }
-                }
-            })()
-        )
-    )
-
-    // registering JSON schema for pydjinni.yaml
-    const yaml = vscode.extensions.getExtension('redhat.vscode-yaml')
-    if (yaml) {
-        if (!yaml.isActive) await yaml.activate()
-        yaml.exports.registerContributor(
-            'pydjinni',
-            () => undefined,
-            async (rawUri: string) => {
-                const uri = vscode.Uri.parse(rawUri)
-                if (uri.path == '/configuration.schema.json') {
-                    return execPython(language_server, ['config-schema'])
-                } else {
-                    return Promise.reject(new Error(`Document not found: ${uri.toString()}`))
-                }
-            }
-        )
-    }
+    await startLangServer()
 }
 
 export async function deactivate(): Promise<void> {
@@ -131,7 +130,6 @@ async function startLangServer() {
     client = new LanguageClient('pydjinni-language-server', serverOptions, clientOptions)
     await client.start()
 }
-
 
 /**
  * Executes a Python module in the currently active Python environment
